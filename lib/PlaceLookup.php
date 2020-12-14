@@ -435,6 +435,13 @@ class PlaceLookup
             if ($this->bExtraTags) {
                 if ($aPlace['extra']) {
                     $aPlace['sExtraTags'] = json_decode($aPlace['extra']);
+                    
+                    if ($aPlace['sExtraTags']->licence) {
+                        $aPlace['licence'] = $aPlace['sExtraTags']->data_licence;
+                    }
+                    if ($aPlace['sExtraTags']->copyright) {
+                        $aPlace['copyright'] = $aPlace['sExtraTags']->data_copyright;
+                    }
                 } else {
                     $aPlace['sExtraTags'] = (object) array();
                 }
