@@ -8,9 +8,11 @@ echo ">\n";
 echo '<';
 echo (isset($sXmlRootTag)?$sXmlRootTag:'searchresults');
 echo " timestamp='".date(DATE_RFC822)."'";
-echo " attribution='Data © OpenStreetMap contributors, ODbL 1.0. http://www.openstreetmap.org/copyright'";
+// echo " attribution='Data © OpenStreetMap contributors, ODbL 1.0. http://www.openstreetmap.org/copyright'";
 echo " querystring='".htmlspecialchars($sQuery, ENT_QUOTES)."'";
+
 if (isset($aMoreParams['viewbox'])) echo " viewbox='".htmlspecialchars($aMoreParams['viewbox'], ENT_QUOTES)."'";
+
 if (isset($aMoreParams['exclude_place_ids'])) {
     echo " exclude_place_ids='".htmlspecialchars($aMoreParams['exclude_place_ids'])."'";
 }
@@ -19,6 +21,8 @@ echo ">\n";
 
 foreach ($aSearchResults as $iResNum => $aResult) {
     echo "<place place_id='".$aResult['place_id']."'";
+    echo " licence='".$aResult['licence']."'";
+    echo " copyright='".$aResult['copyright']."'";
     $sOSMType = formatOSMType($aResult['osm_type']);
     if ($sOSMType) {
         echo " osm_type='$sOSMType'";

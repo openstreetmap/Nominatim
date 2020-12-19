@@ -2,8 +2,8 @@
 
 namespace Nominatim;
 
-require_once(CONST_BasePath.'/lib/AddressDetails.php');
-require_once(CONST_BasePath.'/lib/Result.php');
+require_once CONST_BasePath.'/lib/AddressDetails.php';
+require_once CONST_BasePath.'/lib/Result.php';
 
 class PlaceLookup
 {
@@ -25,6 +25,9 @@ class PlaceLookup
     protected $sAddressRankListSql = null;
     protected $sAllowedTypesSQLList = null;
     protected $bDeDupe = true;
+
+    protected $aLicence = 'Data © OpenStreetMap contributors, ODbL 1.0.';
+    protected $aCopyright = 'https://osm.org/copyright';
 
 
     public function __construct(&$oDB)
@@ -89,9 +92,15 @@ class PlaceLookup
     {
         $aParams = array();
 
-        if ($this->bAddressDetails) $aParams['addressdetails'] = '1';
-        if ($this->bExtraTags) $aParams['extratags'] = '1';
-        if ($this->bNameDetails) $aParams['namedetails'] = '1';
+        if ($this->bAddressDetails) {
+            $aParams['addressdetails'] = '1';
+        }
+        if ($this->bExtraTags) {
+            $aParams['extratags'] = '1';
+        }
+        if ($this->bNameDetails) {
+            $aParams['namedetails'] = '1';
+        }
 
         if ($this->bIncludePolygonAsText) $aParams['polygon_text'] = '1';
         if ($this->bIncludePolygonAsGeoJSON) $aParams['polygon_geojson'] = '1';
@@ -102,7 +111,9 @@ class PlaceLookup
             $aParams['polygon_threshold'] = $this->fPolygonSimplificationThreshold;
         }
 
-        if (!$this->bDeDupe) $aParams['dedupe'] = '0';
+        if (!$this->bDeDupe) {
+            $aParams['dedupe'] = '0';
+        }
 
         return $aParams;
     }
@@ -147,8 +158,9 @@ class PlaceLookup
 
     private function langAddressSql($sHousenumber)
     {
-        if ($this->bAddressDetails)
+        if ($this->bAddressDetails) {
             return ''; // langaddress will be computed from address details
+        }
 
         return 'get_address_by_language(place_id,'.$sHousenumber.','.$this->aLangPrefOrderSql.') AS langaddress,';
     }
@@ -234,10 +246,15 @@ class PlaceLookup
             $sSQL .= '     housenumber,';
             $sSQL .= '     country_code, ';
             $sSQL .= '     importance, ';
-            if (!$this->bDeDupe) $sSQL .= 'place_id,';
-            if (!$this->bAddressDetails) $sSQL .= 'langaddress, ';
+            if (!$this->bDeDupe) {
+                $sSQL .= 'place_id,';
+            }
+            if (!$this->bAddressDetails) {
+                $sSQL .= 'langaddress, ';
+            }
             $sSQL .= '     placename, ';
             $sSQL .= '     ref, ';
+
             if ($this->bExtraTags) $sSQL .= 'extratags, ';
             if ($this->bNameDetails) $sSQL .= 'name, ';
             $sSQL .= '     extra_place ';
@@ -260,8 +277,12 @@ class PlaceLookup
             $sSQL .= $this->langAddressSql('-1');
             $sSQL .= '  postcode as placename,';
             $sSQL .= '  postcode as ref,';
-            if ($this->bExtraTags) $sSQL .= 'null::text AS extra,';
-            if ($this->bNameDetails) $sSQL .= 'null::text AS names,';
+            if ($this->bExtraTags) {
+                $sSQL .= 'null::text AS extra,';
+            }
+            if ($this->bNameDetails) {
+                $sSQL .= 'null::text AS names,';
+            }
             $sSQL .= '  ST_x(geometry) AS lon, ST_y(geometry) AS lat,';
             $sSQL .= '  (0.75-(rank_search::float/40)) AS importance, ';
             $sSQL .= $this->addressImportanceSql('geometry', 'lp.parent_place_id');
@@ -298,8 +319,12 @@ class PlaceLookup
                     $sSQL .= $this->langAddressSql('housenumber_for_place');
                     $sSQL .= '     null::text AS placename, ';
                     $sSQL .= '     null::text AS ref, ';
-                    if ($this->bExtraTags) $sSQL .= 'null::text AS extra,';
-                    if ($this->bNameDetails) $sSQL .= 'null::text AS names,';
+                    if ($this->bExtraTags) {
+                        $sSQL .= 'null::text AS extra,';
+                    }
+                    if ($this->bNameDetails) {
+                        $sSQL .= 'null::text AS names,';
+                    }
                     $sSQL .= '     st_x(centroid) AS lon, ';
                     $sSQL .= '     st_y(centroid) AS lat,';
                     $sSQL .= '     -1.15 AS importance, ';
@@ -344,8 +369,12 @@ class PlaceLookup
                 $sSQL .= $this->langAddressSql('housenumber_for_place');
                 $sSQL .= '  null::text AS placename, ';
                 $sSQL .= '  null::text AS ref, ';
-                if ($this->bExtraTags) $sSQL .= 'null::text AS extra, ';
-                if ($this->bNameDetails) $sSQL .= 'null::text AS names, ';
+                if ($this->bExtraTags) {
+                    $sSQL .= 'null::text AS extra, ';
+                }
+                if ($this->bNameDetails) {
+                    $sSQL .= 'null::text AS names, ';
+                }
                 $sSQL .= '  st_x(centroid) AS lon, ';
                 $sSQL .= '  st_y(centroid) AS lat, ';
                 // slightly smaller than the importance for normal houses
@@ -393,8 +422,12 @@ class PlaceLookup
                     $sSQL .= $this->langAddressSql('-1');
                     $sSQL .= '     null::text AS placename, ';
                     $sSQL .= '     null::text AS ref, ';
-                    if ($this->bExtraTags) $sSQL .= 'null::text AS extra, ';
-                    if ($this->bNameDetails) $sSQL .= 'null::text AS names, ';
+                    if ($this->bExtraTags) {
+                        $sSQL .= 'null::text AS extra, ';
+                    }
+                    if ($this->bNameDetails) {
+                        $sSQL .= 'null::text AS names, ';
+                    }
                     $sSQL .= '     ST_X(centroid) AS lon, ';
                     $sSQL .= '     ST_Y(centroid) AS lat, ';
                     $sSQL .= '     -1.10 AS importance, ';
@@ -421,6 +454,7 @@ class PlaceLookup
 
         foreach ($aPlaces as &$aPlace) {
             $aPlace['importance'] = (float) $aPlace['importance'];
+
             if ($this->bAddressDetails) {
                 // to get addressdetails for tiger data, the housenumber is needed
                 $aPlace['address'] = new AddressDetails(
@@ -432,9 +466,19 @@ class PlaceLookup
                 $aPlace['langaddress'] = $aPlace['address']->getLocaleAddress();
             }
 
+            $aPlace['licence'] = ($this->aLicence);
+            $aPlace['copyright'] = ($this->aCopyright);
+
             if ($this->bExtraTags) {
                 if ($aPlace['extra']) {
                     $aPlace['sExtraTags'] = json_decode($aPlace['extra']);
+                    
+                    if ($aPlace['sExtraTags']->licence) {
+                        $aPlace['licence'] = $aPlace['sExtraTags']->data_licence;
+                    }
+                    if ($aPlace['sExtraTags']->copyright) {
+                        $aPlace['copyright'] = $aPlace['sExtraTags']->data_copyright;
+                    }
                 } else {
                     $aPlace['sExtraTags'] = (object) array();
                 }
@@ -484,7 +528,9 @@ class PlaceLookup
     {
 
         $aOutlineResult = array();
-        if (!$iPlaceID) return $aOutlineResult;
+        if (!$iPlaceID) {
+            return $aOutlineResult;
+        }
 
         if (CONST_Search_AreaPolygons) {
             // Get the bounding box and outline polygon
@@ -497,10 +543,12 @@ class PlaceLookup
             }
             $sSQL .= ' ST_YMin(geometry) as minlat,ST_YMax(geometry) as maxlat,';
             $sSQL .= ' ST_XMin(geometry) as minlon,ST_XMax(geometry) as maxlon';
+
             if ($this->bIncludePolygonAsGeoJSON) $sSQL .= ',ST_AsGeoJSON(geometry) as asgeojson';
             if ($this->bIncludePolygonAsKML) $sSQL .= ',ST_AsKML(geometry) as askml';
             if ($this->bIncludePolygonAsSVG) $sSQL .= ',ST_AsSVG(geometry) as assvg';
             if ($this->bIncludePolygonAsText) $sSQL .= ',ST_AsText(geometry) as astext';
+
             if ($fLonReverse != null && $fLatReverse != null) {
                 $sFrom = ' from (SELECT * , CASE WHEN (class = \'highway\') AND (ST_GeometryType(geometry) = \'ST_LineString\') THEN ';
                 $sFrom .=' ST_ClosestPoint(geometry, ST_SetSRID(ST_Point('.$fLatReverse.','.$fLonReverse.'),4326))';
